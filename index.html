@@ -1,14 +1,12 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>مذاكرتي</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lalezar&display=swap">
 <style>
 :root{--bg:#f4f6fb;--card:#fff;--text:#1d2433;--muted:#667085;--primary:#4f46e5;--primary-text:#fff;--border:#e4e7ee;--ok:#16a34a;--danger:#dc2626}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1420;--card:#171d2d;--text:#e8ecf5;--muted:#9aa4b8;--primary:#818cf8;--primary-text:#0f1420;--border:#262e44}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1420;--card:#171d2d;--text:#e8ecf5;--muted:#9aa4b8;--primary:#818cf8;--primary-text:#0f1420;--border:#262e44;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1420;--card:#171d2d;--text:#e8ecf5;--muted:#9aa4b8;--primary:#818cf8;--primary-text:#0f1420;--border:#262e44;color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.6}
+body{margin:0;direction:rtl;background:var(--bg);color:var(--text);font-family:"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.6}
 header{padding:20px 16px 8px;text-align:center}
 header h1{margin:0;font-size:28px}
 header p{margin:4px 0 0;color:var(--muted);font-size:14px}
@@ -49,10 +47,73 @@ input[type=text],input[type=url],input[type=number],select{width:100%;padding:10
 .dot{width:12px;height:12px;border-radius:50%;flex:none}
 .sub strong{flex:1}
 .pane{display:none}.pane.active{display:block}
-footer{text-align:center;color:var(--muted);font-size:13px;padding:16px}
+footer{display:grid;justify-items:center;gap:10px;text-align:center;color:var(--muted);font-size:13px;padding:16px}
+
+/* ---------- 3D intro: one dark cinematic world, same in both themes ---------- */
+.intro{--in-ink:#070a1c;--in-glow:#818cf8;--in-cyan:#22d3ee;--in-soft:#c7d2fe;--display:"Lalezar","Segoe UI",Tahoma,Arial,sans-serif;
+  position:fixed;inset:0;z-index:1000;overflow:hidden;color:#fff;direction:rtl;touch-action:none;
+  background:radial-gradient(ellipse at 50% 45%,#1b1b4b 0,var(--in-ink) 62%);
+  transition:opacity .8s ease,transform .8s ease}
+.intro.out{opacity:0;transform:scale(1.1);pointer-events:none}
+.intro canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.intro.nogl canvas{display:none}
+.intro.nogl{background:radial-gradient(circle at 20% 30%,#3730a3 0,transparent 45%),radial-gradient(circle at 80% 70%,#0e7490 0,transparent 45%),var(--in-ink);animation:aurora 6s ease-in-out infinite alternate}
+@keyframes aurora{to{background-position:12% 8%,88% 92%,0 0}}
+.vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 45%,rgba(3,4,14,.78) 100%)}
+.stage{position:absolute;inset:0;display:grid;place-content:start center;justify-items:center;gap:14px;perspective:1000px;text-align:center;padding-inline:16px;padding-top:clamp(64px,13vh,150px)}
+.glow{position:absolute;left:50%;top:24%;width:min(92vw,720px);aspect-ratio:1;translate:-50% -50%;pointer-events:none;mix-blend-mode:screen;opacity:0;
+  background:radial-gradient(circle,rgba(129,140,248,.55),transparent 62%)}
+.flash{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 50%,#fff,rgba(165,180,252,.6) 30%,transparent 62%)}
+.kicker{position:relative;font:600 clamp(13px,3.4vw,16px) "Segoe UI",Tahoma,Arial,sans-serif;letter-spacing:.06em;color:var(--in-soft);opacity:0}
+.logo3d{position:relative;display:block;transform-style:preserve-3d;opacity:0;font-family:var(--display);font-size:clamp(64px,22vw,150px);line-height:1.2;white-space:nowrap}
+.logo3d .front{position:relative;display:block;color:transparent;-webkit-text-fill-color:transparent;
+  background:linear-gradient(110deg,#fff 35%,var(--in-soft) 48%,#fff 62%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text}
+.logo3d .layer{position:absolute;inset:0;display:block;pointer-events:none}
+.tag{position:relative;display:flex;gap:.6em;flex-wrap:wrap;justify-content:center;font:600 clamp(15px,4vw,20px) "Segoe UI",Tahoma,Arial,sans-serif;color:var(--in-soft)}
+.tag span{display:inline-block;opacity:0}
+.tag span:not(:last-child)::after{content:"·";margin-inline-start:.6em;opacity:.5}
+.skip{position:absolute;inset-block-end:calc(22px + env(safe-area-inset-bottom,0px));inset-inline-end:16px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;
+  padding:8px 18px;border-radius:99px;font:600 14px "Segoe UI",Tahoma,Arial,sans-serif;cursor:pointer;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.skip:hover{background:rgba(255,255,255,.2)}
+.skip:focus-visible{outline:2px solid var(--in-cyan);outline-offset:3px}
+.progress{position:absolute;inset-inline:0;bottom:0;height:3px;transform-origin:right center;transform:scaleX(0);background:linear-gradient(90deg,var(--in-glow),var(--in-cyan))}
+.run .glow{animation:glowIn 1.8s ease 2.9s both}
+.run .flash{animation:flash 1s ease-out 2.95s both}
+.run .kicker{animation:rise .8s cubic-bezier(.2,.8,.2,1) 4s both}
+.run .logo3d{animation:enter 1.5s cubic-bezier(.2,.9,.25,1) 3s both,float 6s ease-in-out 4.5s infinite}
+.run .logo3d .front{animation:sweep 2.8s ease-in-out 4.5s infinite}
+.run .tag span{animation:rise .8s cubic-bezier(.2,.8,.2,1) both}
+.run .tag span:nth-child(1){animation-delay:4.35s}
+.run .tag span:nth-child(2){animation-delay:4.6s}
+.run .tag span:nth-child(3){animation-delay:4.85s}
+.run .progress{animation:prog 7.8s linear both}
+@keyframes enter{from{opacity:0;transform:translateZ(-650px) rotateX(78deg) scale(.5)}to{opacity:1;transform:none}}
+@keyframes float{0%,100%{transform:rotateY(0) rotateX(0)}25%{transform:rotateY(11deg) rotateX(3deg)}75%{transform:rotateY(-11deg) rotateX(-3deg)}}
+@keyframes sweep{0%{background-position:120% 0}100%{background-position:-120% 0}}
+@keyframes rise{from{opacity:0;transform:translateY(22px) rotateX(-60deg)}to{opacity:1;transform:none}}
+@keyframes glowIn{from{opacity:0;scale:.3}to{opacity:.9;scale:1}}
+@keyframes flash{0%{opacity:0}15%{opacity:.85}100%{opacity:0}}
+@keyframes prog{to{transform:scaleX(1)}}
+.veil{position:absolute;inset:0;pointer-events:none;opacity:0;background:linear-gradient(to bottom,rgba(6,8,22,.72),rgba(6,8,22,0) 55%)}
+.run .veil{animation:fadeIn 1.4s ease 2.8s both}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.intro{display:none}}
 </style>
-</head>
-<body>
+<div class="intro" id="intro" role="presentation">
+  <canvas id="introCanvas" aria-hidden="true"></canvas>
+  <div class="vignette"></div>
+  <div class="veil"></div>
+  <div class="glow"></div>
+  <div class="stage">
+    <div class="kicker" id="introDate"></div>
+    <h1 class="logo3d" id="logo3d"><span class="front">مذاكرتي</span></h1>
+    <p class="tag"><span>رتّب مذاكرتك</span><span>وقّت نفسك</span><span>تابع تقدمك</span></p>
+  </div>
+  <div class="flash"></div>
+  <button class="skip" id="skipIntro" type="button">تخطي ›</button>
+  <i class="progress"></i>
+</div>
+
 <header>
   <h1>📚 مذاكرتي</h1>
   <p>رتّب مذاكرتك، وقّت نفسك، وتابع تقدمك</p>
@@ -119,8 +180,216 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:16px}
   <div class="card"><h2>حسب المادة</h2><div id="statSubjects"></div></div>
 </section>
 </main>
-<footer>تصميم وتطوير: Ali Ahmed</footer>
+<footer><span>تصميم وتطوير: Ali Ahmed</span><button class="btn ghost sm" id="replayIntro" type="button">▶ شغّل الانترو</button></footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+var intro=document.getElementById('intro');
+if(!intro)return;
+var skipBtn=document.getElementById('skipIntro');
+var replayBtn=document.getElementById('replayIntro');
+var logo=document.getElementById('logo3d');
+var DURATION=7800,CAM=7.4;
+var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var seen=false;
+try{seen=sessionStorage.getItem('mz_intro')==='1';}catch(e){}
+
+/* real depth for the title: stacked copies pushed back in Z */
+(function(){
+  var txt=logo.textContent,a=[129,140,248],b=[30,27,75],N=18;
+  for(var i=1;i<=N;i++){
+    var k=i/N,s=document.createElement('span');
+    s.className='layer';s.setAttribute('aria-hidden','true');s.textContent=txt;
+    s.style.transform='translateZ('+(-i*1.8)+'px)';
+    s.style.color='rgb('+[0,1,2].map(function(j){return Math.round(a[j]+(b[j]-a[j])*k);}).join(',')+')';
+    logo.appendChild(s);
+  }
+})();
+
+var renderer,scene,camera,camLight,pts,t0=0,raf=0,timer=0,ended=true,built=false,gl=true;
+var pieces=[],wins=[],glyphs=[],rings=[],ground=null,glyphGroup=null,camK=1;
+var COL=[0x4f46e5,0x0891b2,0x16a34a,0xd97706,0xdb2777,0x7c3aed,0xdc2626,0x0d9488];
+var GLYPH=['∑','∫','π','</>','{ }','SELECT','O(n)','λ','P(A|B)','A⁻¹','JOIN','σ','[ ]→','x²'];
+var GCOL=['#a5b4fc','#67e8f9','#86efac','#fcd34d','#f9a8d4'];
+
+function glyphTex(txt,color){
+  var c=document.createElement('canvas');c.width=256;c.height=128;
+  var x=c.getContext('2d');x.textAlign='center';x.textBaseline='middle';
+  x.font='700 '+(txt.length>4?42:68)+'px "Courier New",monospace';
+  x.shadowColor=color;x.shadowBlur=18;x.fillStyle=color;
+  x.fillText(txt,128,66);x.fillText(txt,128,66);
+  return new THREE.CanvasTexture(c);
+}
+function portalTex(){
+  var c=document.createElement('canvas');c.width=c.height=256;
+  var x=c.getContext('2d'),g=x.createRadialGradient(128,128,0,128,128,128);
+  g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.25,'rgba(165,180,252,.8)');g.addColorStop(1,'rgba(79,70,229,0)');
+  x.fillStyle=g;x.fillRect(0,0,256,256);
+  return new THREE.CanvasTexture(c);
+}
+
+function build(){
+  if(typeof THREE==='undefined')throw new Error('three missing');
+  var cv=document.getElementById('introCanvas');
+  renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x060816);
+  scene.fog=new THREE.FogExp2(0x060816,0.012);
+  camera=new THREE.PerspectiveCamera(52,1,0.1,400);
+  scene.add(new THREE.AmbientLight(0x7a82ff,0.7));
+  var sun=new THREE.DirectionalLight(0xffffff,1.1);sun.position.set(10,18,14);scene.add(sun);
+  var rim=new THREE.DirectionalLight(0x818cf8,0.9);rim.position.set(-12,8,-10);scene.add(rim);
+  var warm=new THREE.PointLight(0xffd9a0,1.4,45);warm.position.set(0,6,14);scene.add(warm);
+
+  /* ground */
+  var disc=new THREE.Mesh(new THREE.CircleGeometry(46,64),new THREE.MeshBasicMaterial({color:0x090d26,transparent:true,opacity:0}));
+  disc.rotation.x=-Math.PI/2;disc.position.y=-.02;scene.add(disc);
+  var grid=new THREE.GridHelper(92,46,0x4f46e5,0x1e2a6b);
+  grid.material.transparent=true;grid.material.opacity=0;scene.add(grid);
+  ground={disc:disc,grid:grid};
+
+  /* the university: every part appears as a cyan blueprint outline, then fills in */
+  var stone=new THREE.MeshStandardMaterial({color:0xe9e6f5,roughness:.7,metalness:.05,emissive:0x2a2a6a,emissiveIntensity:.25});
+  var indigo=new THREE.MeshStandardMaterial({color:0x4f46e5,roughness:.35,metalness:.3,emissive:0x3730a3,emissiveIntensity:.55});
+  function box(w,h,d){var g=new THREE.BoxGeometry(w,h,d);g.translate(0,h/2,0);return g;}
+  function cyl(r,h,seg){var g=new THREE.CylinderGeometry(r,r,h,seg||24);g.translate(0,h/2,0);return g;}
+  function piece(geo,mat,x,y,z,start,dur,type){
+    var m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);
+    var l=new THREE.LineSegments(new THREE.EdgesGeometry(geo,30),new THREE.LineBasicMaterial({color:0x67e8f9,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));
+    m.add(l);m.visible=false;
+    m.userData={y:y,s:start,d:dur,type:type,line:l};
+    scene.add(m);pieces.push(m);return m;
+  }
+  piece(box(26,.6,11),stone,0,0,.5,.15,.6,'grow');                 /* podium */
+  piece(box(9,.4,1),stone,0,0,6.5,.7,.35,'grow');                  /* front steps */
+  piece(box(9,.2,1),stone,0,0,7.5,.85,.3,'grow');
+  piece(box(10,5,6),stone,0,.6,0,.8,.8,'grow');                    /* main hall */
+  piece(box(7,3.6,5.5),stone,-8.5,.6,.3,1.0,.8,'grow');           /* wings */
+  piece(box(7,3.6,5.5),stone,8.5,.6,.3,1.15,.8,'grow');
+  for(var i=0;i<6;i++)piece(cyl(.32,4.4,20),stone,-4+i*1.6,.6,4.4,1.5+i*.09,.4,'grow'); /* columns */
+  piece(box(10.2,.5,2),stone,0,5.0,4.3,2.05,.4,'drop');            /* beam */
+  var sh=new THREE.Shape();sh.moveTo(-5.1,0);sh.lineTo(5.1,0);sh.lineTo(0,1.9);sh.lineTo(-5.1,0);
+  var pg=new THREE.ExtrudeGeometry(sh,{depth:2,bevelEnabled:false});pg.translate(0,0,-1);
+  piece(pg,stone,0,5.5,4.3,2.25,.45,'drop');                       /* pediment */
+  piece(cyl(2.3,1.4,32),stone,0,5.6,0,2.5,.4,'grow');              /* drum */
+  piece(new THREE.SphereGeometry(2.3,32,16,0,Math.PI*2,0,Math.PI/2),indigo,0,7.0,0,2.7,.55,'pop'); /* dome */
+  piece(cyl(.45,.9,16),stone,0,9.3,0,3.05,.25,'grow');             /* lantern */
+  var sg=new THREE.ConeGeometry(.3,1.4,12);sg.translate(0,.7,0);
+  piece(sg,indigo,0,10.2,0,3.2,.25,'grow');                        /* spire */
+
+  /* windows light up after the dome closes */
+  var wn=0;
+  function win(w,h,x,y,z,col){
+    var m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:col||0xfcd34d,transparent:true,opacity:0}));
+    m.position.set(x,y,z);m.userData={s:3.3+wn*.05};wn++;scene.add(m);wins.push(m);
+  }
+  win(1.5,2.4,0,1.8,3.02,0xfde68a);
+  [-3.6,-2,2,3.6].forEach(function(x){win(.9,1.5,x,3.4,3.02);});
+  [-8.5,8.5].forEach(function(cx){[-2.2,0,2.2].forEach(function(dx){[1.7,3.2].forEach(function(y){win(.8,1,cx+dx,y,3.07);});});});
+
+  /* subject symbols orbiting the campus */
+  glyphGroup=new THREE.Group();scene.add(glyphGroup);
+  for(var j=0;j<26;j++){
+    var sm=new THREE.SpriteMaterial({map:glyphTex(GLYPH[j%GLYPH.length],GCOL[j%GCOL.length]),transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});
+    var s=new THREE.Sprite(sm),ang=(j/26)*Math.PI*2+Math.random()*.4,rr=15+Math.random()*11;
+    s.scale.set(2.6,1.3,1);
+    s.position.set(Math.cos(ang)*rr,2+Math.random()*14,Math.sin(ang)*rr);
+    s.userData={y0:s.position.y,ph:Math.random()*6};
+    glyphGroup.add(s);glyphs.push(s);
+  }
+
+  /* dust */
+  var N=1400,pos=new Float32Array(N*3);
+  for(var q=0;q<N;q++){pos[q*3]=(Math.random()-.5)*90;pos[q*3+1]=Math.random()*30;pos[q*3+2]=(Math.random()-.5)*90;}
+  var pgm=new THREE.BufferGeometry();pgm.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  pts=new THREE.Points(pgm,new THREE.PointsMaterial({color:0xa5b4fc,size:.12,transparent:true,opacity:.85,blending:THREE.AdditiveBlending,depthWrite:false}));
+  scene.add(pts);
+
+  /* shockwave when the campus is complete */
+  var rg=new THREE.RingGeometry(1,1.12,96);
+  for(var r=0;r<2;r++){
+    var rm=new THREE.MeshBasicMaterial({color:r?0x818cf8:0x22d3ee,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide});
+    var ring=new THREE.Mesh(rg,rm);ring.rotation.x=-Math.PI/2;ring.position.y=.06;ring.userData={s:3.2+r*.28};
+    scene.add(ring);rings.push(ring);
+  }
+}
+
+function resize(){
+  if(!renderer)return;
+  var w=intro.clientWidth||window.innerWidth,h=intro.clientHeight||window.innerHeight,asp=w/h;
+  renderer.setSize(w,h,false);
+  camK=Math.min(2.4,Math.max(1,1.25/asp));
+  scene.fog.density=.012/camK;
+  camera.aspect=asp;
+  camera.setViewOffset(w,h,0,-Math.round(h*.16),w,h);
+}
+
+function ease(x){x=x<0?0:x>1?1:x;return 1-Math.pow(1-x,3);}
+
+function update(t){
+  var p=Math.min(t/CAM,1),e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+  var ang=-1.1+1.25*e+Math.sin(t*.5)*.02,rad=(38-15*e)*camK,hh=(12-6.5*e)*Math.max(1,camK*.8);
+  camera.position.set(Math.sin(ang)*rad,hh,Math.cos(ang)*rad);
+  camera.lookAt(0,4.2,0);
+  var g=ease(t/.8);ground.disc.material.opacity=g*.9;ground.grid.material.opacity=g*.55;
+  for(var i=0;i<pieces.length;i++){
+    var m=pieces[i],u=m.userData,q=(t-u.s)/u.d;
+    if(q<=0){m.visible=false;continue;}
+    m.visible=true;var k=ease(q);
+    if(u.type==='grow'){m.scale.set(1,Math.max(k,.001),1);}
+    else if(u.type==='drop'){m.scale.set(1,1,1);m.position.y=u.y+(1-k)*7;}
+    else{m.scale.setScalar(Math.max(k,.001));}
+    u.line.material.opacity=q<1?(1-q)*.9+.15:.15;
+  }
+  for(var w=0;w<wins.length;w++){var wm=wins[w],wq=ease((t-wm.userData.s)/.15);wm.material.opacity=wq*.95;wm.scale.setScalar(.6+.4*wq);}
+  glyphGroup.rotation.y=t*.07;
+  var gf=ease((t-1)/1.5)*.85;
+  for(var j=0;j<glyphs.length;j++){var s=glyphs[j];s.material.opacity=gf;s.position.y=s.userData.y0+Math.sin(t*1.2+s.userData.ph)*.4;}
+  for(var r=0;r<rings.length;r++){
+    var rg=rings[r],rq=(t-rg.userData.s)/1.6;
+    if(rq<=0||rq>=1){rg.material.opacity=0;}
+    else{rg.scale.setScalar(1+rq*40);rg.material.opacity=(1-rq)*.8;}
+  }
+  pts.rotation.y=t*.02;
+}
+
+function frame(now){
+  if(ended)return;
+  update((now-t0)/1000);
+  renderer.render(scene,camera);
+  raf=requestAnimationFrame(frame);
+}
+
+function start(){
+  ended=false;
+  intro.hidden=false;intro.classList.remove('out','run','nogl');
+  try{document.getElementById('introDate').textContent=new Date().toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long'});}catch(e){}
+  void intro.offsetWidth;
+  intro.classList.add('run');
+  if(!built&&gl){try{build();built=true;}catch(e){gl=false;}}
+  if(!gl){intro.classList.add('nogl');}
+  else{resize();t0=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(frame);}
+  clearTimeout(timer);timer=setTimeout(end,DURATION);
+}
+function end(){
+  if(ended)return;
+  ended=true;clearTimeout(timer);cancelAnimationFrame(raf);
+  intro.classList.add('out');
+  try{sessionStorage.setItem('mz_intro','1');}catch(e){}
+  setTimeout(function(){if(ended){intro.hidden=true;intro.classList.remove('run');}},900);
+}
+
+window.addEventListener('resize',resize);
+skipBtn.addEventListener('click',end);
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!ended)end();});
+if(replayBtn)replayBtn.addEventListener('click',function(){window.scrollTo(0,0);start();});
+
+if(reduce||seen){intro.hidden=true;}else{start();}
+})();
+</script>
 <script>
 (function(){
 'use strict';
@@ -337,5 +606,5 @@ function renderAll(){renderSelects();renderTasks();renderSubjects();renderStats(
 renderAll();drawClock();
 })();
 </script>
-</body>
-</html>
+
+</body></html>
