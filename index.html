@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مذاكرتي</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--text:#1d2433;--muted:#667085;--primary:#4f46e5;--primary-text:#fff;--border:#e4e7ee;--ok:#16a34a;--danger:#dc2626}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1420;--card:#171d2d;--text:#e8ecf5;--muted:#9aa4b8;--primary:#818cf8;--primary-text:#0f1420;--border:#262e44}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.6}
+header{padding:20px 16px 8px;text-align:center}
+header h1{margin:0;font-size:28px}
+header p{margin:4px 0 0;color:var(--muted);font-size:14px}
+main{max-width:760px;margin:0 auto;padding:8px 16px 48px}
+nav{display:flex;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:6px;margin:12px 0 16px;position:sticky;top:8px;z-index:5}
+nav button{flex:1;border:0;background:none;color:var(--muted);font:inherit;font-size:14px;padding:10px 4px;border-radius:10px;cursor:pointer}
+nav button.active{background:var(--primary);color:var(--primary-text);font-weight:700}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px}
+.card h2{margin:0 0 12px;font-size:17px}
+input,select,button{font:inherit}
+input[type=text],input[type=url],input[type=number],select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row>*{flex:1 1 140px}
+.row>.grow{flex:3 1 220px}
+.btn{border:0;background:var(--primary);color:var(--primary-text);padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:700;text-decoration:none;display:inline-block;text-align:center}
+.btn.ghost{background:none;color:var(--text);border:1px solid var(--border);font-weight:400}
+.btn.danger{background:none;color:var(--danger);border:1px solid var(--border);font-weight:400}
+.btn.sm{padding:6px 12px;font-size:13px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1px solid var(--border);background:none;color:var(--text);padding:5px 12px;border-radius:99px;cursor:pointer;font-size:13px}
+.chip.active{background:var(--primary);color:var(--primary-text);border-color:var(--primary)}
+.task{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--border)}
+.task:first-child{border-top:0}
+.task input{width:20px;height:20px;flex:none;accent-color:var(--primary)}
+.task .t{flex:1;word-break:break-word}
+.task.done .t{text-decoration:line-through;color:var(--muted)}
+.badge{font-size:12px;padding:2px 10px;border-radius:99px;color:#fff;white-space:nowrap}
+.x{border:0;background:none;color:var(--danger);cursor:pointer;font-size:18px;padding:0 4px}
+.empty{color:var(--muted);text-align:center;padding:16px 0}
+.clock{font-size:64px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;margin:8px 0;direction:ltr}
+.bar{height:10px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--border)}
+.bar>i{display:block;height:100%;border-radius:99px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stat{background:var(--bg);border-radius:12px;padding:14px;text-align:center}
+.stat b{display:block;font-size:24px}
+.stat span{color:var(--muted);font-size:13px}
+.sub{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.dot{width:12px;height:12px;border-radius:50%;flex:none}
+.sub strong{flex:1}
+.pane{display:none}.pane.active{display:block}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>📚 مذاكرتي</h1>
+  <p>رتّب مذاكرتك، وقّت نفسك، وتابع تقدمك</p>
+</header>
+<main>
+<nav id="nav">
+  <button data-tab="tasks" class="active">المهام</button>
+  <button data-tab="timer">المؤقت</button>
+  <button data-tab="subjects">المواد</button>
+  <button data-tab="stats">الإحصائيات</button>
+</nav>
+
+<section id="tasks" class="pane active">
+  <div class="card">
+    <h2>مهمة جديدة</h2>
+    <form id="taskForm" class="row">
+      <input class="grow" type="text" id="taskTitle" placeholder="مثلًا: حل شيت 2" maxlength="120" required>
+      <select id="taskSubject"></select>
+      <button class="btn" type="submit">إضافة</button>
+    </form>
+  </div>
+  <div class="card">
+    <div class="chips" id="filters"></div>
+    <div id="taskList"></div>
+  </div>
+</section>
+
+<section id="timer" class="pane">
+  <div class="card">
+    <h2>مؤقت المذاكرة</h2>
+    <select id="tSubject"></select>
+    <div class="clock" id="clock">25:00</div>
+    <div class="chips" style="justify-content:center" id="presets">
+      <button class="chip active" data-min="25">25 دقيقة</button>
+      <button class="chip" data-min="45">45 دقيقة</button>
+      <button class="chip" data-min="60">60 دقيقة</button>
+    </div>
+    <div class="row" style="margin-bottom:12px">
+      <input type="number" id="customMin" min="1" max="300" placeholder="مدة مخصصة بالدقائق">
+      <button class="btn ghost" id="setCustom" type="button">تحديد</button>
+    </div>
+    <div class="row">
+      <button class="btn" id="startBtn" type="button">ابدأ</button>
+      <button class="btn ghost" id="resetBtn" type="button">إعادة</button>
+    </div>
+    <p style="color:var(--muted);font-size:13px;margin:12px 0 0">الوقت اللي بيعدّي بيتسجل تلقائي على المادة المختارة وبيظهر في الإحصائيات.</p>
+  </div>
+</section>
+
+<section id="subjects" class="pane">
+  <div class="card">
+    <h2>إضافة مادة</h2>
+    <form id="subForm" class="row">
+      <input class="grow" type="text" id="subName" placeholder="اسم المادة" maxlength="60" required>
+      <input class="grow" type="url" id="subLink" placeholder="رابط البلاي ليست (اختياري)">
+      <button class="btn" type="submit">إضافة</button>
+    </form>
+  </div>
+  <div id="subList"></div>
+</section>
+
+<section id="stats" class="pane">
+  <div class="card"><div class="grid" id="statGrid"></div></div>
+  <div class="card"><h2>حسب المادة</h2><div id="statSubjects"></div></div>
+</section>
+</main>
+<footer>تصميم وتطوير: Ali Ahmed</footer>
+
+<script>
+(function(){
+'use strict';
+var KEY='mzakarti_v2';
+var COLORS=['#4f46e5','#0891b2','#16a34a','#d97706','#db2777','#7c3aed','#dc2626','#0d9488'];
+var YT='https://www.youtube.com/playlist?list=';
+var DEFAULTS=[
+  ['قواعد البيانات (Database)',YT+'PL37D52B7714788190'],
+  ['هياكل البيانات (Data Structures)',YT+'PL1DUmTEdeA6LXpHtaTyRBok5XnpNzRIfA'],
+  ['الاحتمالات والإحصاء (Probability & Statistics)',YT+'PL1DUmTEdeA6JlommmGP5wicYLxX5PVCQt'],
+  ['مقدمة في نظم المعلومات (Intro to Information Systems)',YT+'PLxIvc-MGOs6gW9SgkmoxE5w9vQkID1_r-'],
+  ['الجبر الخطي (Linear Algebra)',YT+'PLxIvc-MGOs6iQXFnjF_STbhGdrZBphrv_']
+];
+
+function $(s){return document.querySelector(s);}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function safeUrl(u){try{var x=new URL(u);return (x.protocol==='https:'||x.protocol==='http:')?x.href:'';}catch(e){return '';}}
+function fmt(sec){
+  var h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60);
+  if(h>0)return h+' س '+m+' د';
+  if(m>0)return m+' د';
+  return sec+' ث';
+}
+
+var S;
+function load(){
+  try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&p.subjects)return p;}}catch(e){}
+  return {
+    subjects:DEFAULTS.map(function(d,i){return {id:uid(),name:d[0],link:d[1],color:COLORS[i%COLORS.length]};}),
+    tasks:[],sessions:{}
+  };
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+S=load();
+
+var filter='all';
+function subj(id){return S.subjects.filter(function(s){return s.id===id;})[0];}
+
+/* ---------- tabs ---------- */
+$('#nav').addEventListener('click',function(e){
+  var b=e.target.closest('button[data-tab]');if(!b)return;
+  document.querySelectorAll('#nav button').forEach(function(x){x.classList.toggle('active',x===b);});
+  document.querySelectorAll('.pane').forEach(function(p){p.classList.toggle('active',p.id===b.dataset.tab);});
+  if(b.dataset.tab==='stats')renderStats();
+});
+
+/* ---------- selects ---------- */
+function renderSelects(){
+  var opts=S.subjects.length?S.subjects.map(function(s){return '<option value="'+s.id+'">'+esc(s.name)+'</option>';}).join(''):'<option value="">— ضيف مادة الأول —</option>';
+  var a=$('#taskSubject'),b=$('#tSubject');
+  var av=a.value,bv=b.value;
+  a.innerHTML=opts;b.innerHTML=opts;
+  if(subj(av))a.value=av;
+  if(subj(bv))b.value=bv;
+}
+
+/* ---------- tasks ---------- */
+$('#taskForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  var t=$('#taskTitle').value.trim();if(!t)return;
+  S.tasks.unshift({id:uid(),title:t,subjectId:$('#taskSubject').value,done:false});
+  $('#taskTitle').value='';
+  save();renderTasks();
+});
+function renderTasks(){
+  var chips='<button class="chip'+(filter==='all'?' active':'')+'" data-f="all">الكل</button>'+
+    S.subjects.map(function(s){return '<button class="chip'+(filter===s.id?' active':'')+'" data-f="'+s.id+'">'+esc(s.name.split(' (')[0])+'</button>';}).join('');
+  $('#filters').innerHTML=chips;
+  var list=S.tasks.filter(function(t){return filter==='all'||t.subjectId===filter;});
+  if(!list.length){$('#taskList').innerHTML='<div class="empty">مفيش مهام هنا لسه ✨</div>';return;}
+  list.sort(function(a,b){return a.done-b.done;});
+  $('#taskList').innerHTML=list.map(function(t){
+    var s=subj(t.subjectId);
+    return '<div class="task'+(t.done?' done':'')+'">'+
+      '<input type="checkbox" data-done="'+t.id+'"'+(t.done?' checked':'')+'>'+
+      '<span class="t">'+esc(t.title)+'</span>'+
+      (s?'<span class="badge" style="background:'+s.color+'">'+esc(s.name.split(' (')[0])+'</span>':'')+
+      '<button class="x" data-del="'+t.id+'" title="حذف">×</button></div>';
+  }).join('');
+}
+$('#filters').addEventListener('click',function(e){
+  var b=e.target.closest('[data-f]');if(!b)return;
+  filter=b.dataset.f;renderTasks();
+});
+$('#taskList').addEventListener('click',function(e){
+  var d=e.target.closest('[data-del]');
+  if(d){S.tasks=S.tasks.filter(function(t){return t.id!==d.dataset.del;});save();renderTasks();return;}
+});
+$('#taskList').addEventListener('change',function(e){
+  var c=e.target.closest('[data-done]');if(!c)return;
+  S.tasks.forEach(function(t){if(t.id===c.dataset.done)t.done=c.checked;});
+  save();renderTasks();
+});
+
+/* ---------- subjects ---------- */
+$('#subForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  var n=$('#subName').value.trim();if(!n)return;
+  var raw=$('#subLink').value.trim();
+  var link=raw?safeUrl(raw):'';
+  if(raw&&!link){alert('الرابط مش صحيح. لازم يبدأ بـ https://');return;}
+  S.subjects.push({id:uid(),name:n,link:link,color:COLORS[S.subjects.length%COLORS.length]});
+  $('#subName').value='';$('#subLink').value='';
+  save();renderAll();
+});
+function renderSubjects(){
+  if(!S.subjects.length){$('#subList').innerHTML='<div class="card empty">مفيش مواد. ضيف أول مادة من فوق.</div>';return;}
+  $('#subList').innerHTML=S.subjects.map(function(s){
+    var u=safeUrl(s.link);
+    return '<div class="card">'+
+      '<div class="sub"><span class="dot" style="background:'+s.color+'"></span><strong>'+esc(s.name)+'</strong></div>'+
+      '<input type="url" data-link="'+s.id+'" value="'+esc(s.link||'')+'" placeholder="رابط البلاي ليست" style="margin-bottom:8px">'+
+      '<div class="row">'+
+      (u?'<a class="btn sm" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">▶ فتح البلاي ليست</a>':'<span style="color:var(--muted);font-size:13px;flex:1 1 140px">مفيش رابط</span>')+
+      '<button class="btn danger sm" data-delsub="'+s.id+'" type="button">حذف المادة</button>'+
+      '</div></div>';
+  }).join('');
+}
+$('#subList').addEventListener('change',function(e){
+  var i=e.target.closest('[data-link]');if(!i)return;
+  var raw=i.value.trim();var link=raw?safeUrl(raw):'';
+  if(raw&&!link){alert('الرابط مش صحيح. لازم يبدأ بـ https://');renderSubjects();return;}
+  S.subjects.forEach(function(s){if(s.id===i.dataset.link)s.link=link;});
+  save();renderSubjects();
+});
+$('#subList').addEventListener('click',function(e){
+  var d=e.target.closest('[data-delsub]');if(!d)return;
+  var s=subj(d.dataset.delsub);
+  if(!confirm('حذف "'+s.name+'" ومهامها ووقت مذاكرتها؟'))return;
+  S.subjects=S.subjects.filter(function(x){return x.id!==s.id;});
+  S.tasks=S.tasks.filter(function(t){return t.subjectId!==s.id;});
+  delete S.sessions[s.id];
+  if(filter===s.id)filter='all';
+  save();renderAll();
+});
+
+/* ---------- timer ---------- */
+var T={running:false,total:25*60,left:25*60,last:0,iv:null};
+function drawClock(){
+  var m=Math.floor(T.left/60),s=T.left%60;
+  var txt=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  $('#clock').textContent=txt;
+  document.title=T.running?txt+' • مذاكرتي':'مذاكرتي';
+  $('#startBtn').textContent=T.running?'إيقاف مؤقت':'ابدأ';
+}
+function beep(){
+  try{
+    var C=window.AudioContext||window.webkitAudioContext;var c=new C();
+    var o=c.createOscillator(),g=c.createGain();
+    o.connect(g);g.connect(c.destination);o.frequency.value=880;g.gain.value=0.15;
+    o.start();setTimeout(function(){o.stop();c.close();},600);
+  }catch(e){}
+}
+function tick(){
+  var now=Date.now();
+  var d=Math.floor((now-T.last)/1000);
+  if(d<1)return;
+  T.last+=d*1000;
+  d=Math.min(d,T.left);
+  T.left-=d;
+  var sid=$('#tSubject').value;
+  if(sid&&subj(sid))S.sessions[sid]=(S.sessions[sid]||0)+d;
+  save();drawClock();
+  if(T.left<=0){stopTimer();beep();drawClock();alert('خلصت الجلسة 🎉 خد استراحة قصيرة');}
+}
+function startTimer(){
+  if(T.left<=0)T.left=T.total;
+  T.running=true;T.last=Date.now();
+  T.iv=setInterval(tick,500);drawClock();
+}
+function stopTimer(){T.running=false;clearInterval(T.iv);T.iv=null;drawClock();}
+$('#startBtn').addEventListener('click',function(){T.running?stopTimer():startTimer();});
+$('#resetBtn').addEventListener('click',function(){stopTimer();T.left=T.total;drawClock();});
+function setMinutes(m){
+  stopTimer();T.total=m*60;T.left=T.total;drawClock();
+}
+$('#presets').addEventListener('click',function(e){
+  var b=e.target.closest('[data-min]');if(!b)return;
+  document.querySelectorAll('#presets .chip').forEach(function(x){x.classList.toggle('active',x===b);});
+  setMinutes(+b.dataset.min);
+});
+$('#setCustom').addEventListener('click',function(){
+  var v=parseInt($('#customMin').value,10);
+  if(!v||v<1||v>300){alert('اكتب مدة من 1 لـ 300 دقيقة');return;}
+  document.querySelectorAll('#presets .chip').forEach(function(x){x.classList.remove('active');});
+  setMinutes(v);
+});
+
+/* ---------- stats ---------- */
+function renderStats(){
+  var done=S.tasks.filter(function(t){return t.done;}).length;
+  var total=S.tasks.length;
+  var secs=0;Object.keys(S.sessions).forEach(function(k){if(subj(k))secs+=S.sessions[k];});
+  var pct=total?Math.round(done/total*100):0;
+  $('#statGrid').innerHTML=
+    '<div class="stat"><b>'+done+' / '+total+'</b><span>مهام مكتملة</span></div>'+
+    '<div class="stat"><b>'+pct+'%</b><span>نسبة الإنجاز</span></div>'+
+    '<div class="stat"><b>'+(secs?fmt(secs):'0 د')+'</b><span>إجمالي وقت المذاكرة</span></div>';
+  var max=1;S.subjects.forEach(function(s){max=Math.max(max,S.sessions[s.id]||0);});
+  if(!S.subjects.length){$('#statSubjects').innerHTML='<div class="empty">مفيش مواد</div>';return;}
+  $('#statSubjects').innerHTML=S.subjects.map(function(s){
+    var t=S.sessions[s.id]||0;
+    var mine=S.tasks.filter(function(x){return x.subjectId===s.id;});
+    var d=mine.filter(function(x){return x.done;}).length;
+    return '<div style="margin-bottom:14px">'+
+      '<div class="sub"><span class="dot" style="background:'+s.color+'"></span><strong>'+esc(s.name)+'</strong></div>'+
+      '<div class="bar"><i style="width:'+Math.round(t/max*100)+'%;background:'+s.color+'"></i></div>'+
+      '<div style="color:var(--muted);font-size:13px;margin-top:4px">وقت: '+(t?fmt(t):'0 د')+' · مهام: '+d+' / '+mine.length+'</div></div>';
+  }).join('');
+}
+
+function renderAll(){renderSelects();renderTasks();renderSubjects();renderStats();}
+renderAll();drawClock();
+})();
+</script>
+</body>
+</html>
