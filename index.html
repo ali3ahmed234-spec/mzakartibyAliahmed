@@ -164,14 +164,6 @@ footer{display:grid;justify-items:center;gap:10px;text-align:center;color:var(--
 </section>
 
 <section id="subjects" class="pane">
-  <div class="card">
-    <h2>إضافة مادة</h2>
-    <form id="subForm" class="row">
-      <input class="grow" type="text" id="subName" placeholder="اسم المادة" maxlength="60" required>
-      <input class="grow" type="url" id="subLink" placeholder="رابط البلاي ليست (اختياري)">
-      <button class="btn" type="submit">إضافة</button>
-    </form>
-  </div>
   <div id="subList"></div>
 </section>
 
@@ -396,13 +388,15 @@ if(reduce||seen){intro.hidden=true;}else{start();}
 var KEY='mzakarti_v2';
 var COLORS=['#4f46e5','#0891b2','#16a34a','#d97706','#db2777','#7c3aed','#dc2626','#0d9488'];
 var YT='https://www.youtube.com/playlist?list=';
+/* المواد والروابط ثابتة في الكود (قراءة فقط): التعديل بيتم من هنا بس */
 var DEFAULTS=[
-  ['قواعد البيانات (Database)',YT+'PL37D52B7714788190'],
-  ['هياكل البيانات (Data Structures)',YT+'PL1DUmTEdeA6LXpHtaTyRBok5XnpNzRIfA'],
-  ['الاحتمالات والإحصاء (Probability & Statistics)',YT+'PL1DUmTEdeA6JlommmGP5wicYLxX5PVCQt'],
-  ['مقدمة في نظم المعلومات (Intro to Information Systems)',YT+'PLxIvc-MGOs6gW9SgkmoxE5w9vQkID1_r-'],
-  ['الجبر الخطي (Linear Algebra)',YT+'PLxIvc-MGOs6iQXFnjF_STbhGdrZBphrv_']
+  ['s1','قواعد البيانات (Database)',YT+'PL37D52B7714788190'],
+  ['s2','هياكل البيانات (Data Structures)',YT+'PL1DUmTEdeA6LXpHtaTyRBok5XnpNzRIfA'],
+  ['s3','الاحتمالات والإحصاء (Probability & Statistics)',YT+'PL1DUmTEdeA6JlommmGP5wicYLxX5PVCQt'],
+  ['s4','مقدمة في نظم المعلومات (Intro to Information Systems)',YT+'PLxIvc-MGOs6gW9SgkmoxE5w9vQkID1_r-'],
+  ['s5','الجبر الخطي (Linear Algebra)',YT+'PLxIvc-MGOs6iQXFnjF_STbhGdrZBphrv_']
 ];
+var FIXED=DEFAULTS.map(function(d,i){return {id:d[0],name:d[1],link:d[2],color:COLORS[i%COLORS.length]};});
 
 function $(s){return document.querySelector(s);}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
@@ -417,13 +411,33 @@ function fmt(sec){
 
 var S;
 function load(){
-  try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&p.subjects)return p;}}catch(e){}
-  return {
-    subjects:DEFAULTS.map(function(d,i){return {id:uid(),name:d[0],link:d[1],color:COLORS[i%COLORS.length]};}),
-    tasks:[],sessions:{}
-  };
+  var out={subjects:FIXED,tasks:[],sessions:{}};
+  try{
+    var raw=localStorage.getItem(KEY);
+    if(raw){
+      var p=JSON.parse(raw);
+      if(p){
+        /* ربط المواد القديمة (ids عشوائية) بالمواد الثابتة عن طريق الاسم */
+        var map={};
+        (p.subjects||[]).forEach(function(o){
+          FIXED.forEach(function(f){if(f.name===o.name)map[o.id]=f.id;});
+          if(!map[o.id])map[o.id]=o.id;
+        });
+        (p.tasks||[]).forEach(function(t){
+          var id=map[t.subjectId]||t.subjectId;
+          if(FIXED.some(function(f){return f.id===id;})){t.subjectId=id;out.tasks.push(t);}
+        });
+        var ses=p.sessions||{};
+        Object.keys(ses).forEach(function(k){
+          var id=map[k]||k;
+          if(FIXED.some(function(f){return f.id===id;}))out.sessions[id]=(out.sessions[id]||0)+ses[k];
+        });
+      }
+    }
+  }catch(e){}
+  return out;
 }
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({subjects:S.subjects,tasks:S.tasks,sessions:S.sessions}));}catch(e){}}
 S=load();
 
 var filter='all';
@@ -486,46 +500,16 @@ $('#taskList').addEventListener('change',function(e){
 });
 
 /* ---------- subjects ---------- */
-$('#subForm').addEventListener('submit',function(e){
-  e.preventDefault();
-  var n=$('#subName').value.trim();if(!n)return;
-  var raw=$('#subLink').value.trim();
-  var link=raw?safeUrl(raw):'';
-  if(raw&&!link){alert('الرابط مش صحيح. لازم يبدأ بـ https://');return;}
-  S.subjects.push({id:uid(),name:n,link:link,color:COLORS[S.subjects.length%COLORS.length]});
-  $('#subName').value='';$('#subLink').value='';
-  save();renderAll();
-});
+/* المواد للعرض فقط: مفيش إضافة ولا تعديل ولا حذف من الصفحة */
 function renderSubjects(){
-  if(!S.subjects.length){$('#subList').innerHTML='<div class="card empty">مفيش مواد. ضيف أول مادة من فوق.</div>';return;}
   $('#subList').innerHTML=S.subjects.map(function(s){
     var u=safeUrl(s.link);
     return '<div class="card">'+
       '<div class="sub"><span class="dot" style="background:'+s.color+'"></span><strong>'+esc(s.name)+'</strong></div>'+
-      '<input type="url" data-link="'+s.id+'" value="'+esc(s.link||'')+'" placeholder="رابط البلاي ليست" style="margin-bottom:8px">'+
-      '<div class="row">'+
-      (u?'<a class="btn sm" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">▶ فتح البلاي ليست</a>':'<span style="color:var(--muted);font-size:13px;flex:1 1 140px">مفيش رابط</span>')+
-      '<button class="btn danger sm" data-delsub="'+s.id+'" type="button">حذف المادة</button>'+
-      '</div></div>';
+      (u?'<a class="btn" style="display:block" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">▶ فتح البلاي ليست</a>':'<span style="color:var(--muted);font-size:13px">مفيش رابط</span>')+
+      '</div>';
   }).join('');
 }
-$('#subList').addEventListener('change',function(e){
-  var i=e.target.closest('[data-link]');if(!i)return;
-  var raw=i.value.trim();var link=raw?safeUrl(raw):'';
-  if(raw&&!link){alert('الرابط مش صحيح. لازم يبدأ بـ https://');renderSubjects();return;}
-  S.subjects.forEach(function(s){if(s.id===i.dataset.link)s.link=link;});
-  save();renderSubjects();
-});
-$('#subList').addEventListener('click',function(e){
-  var d=e.target.closest('[data-delsub]');if(!d)return;
-  var s=subj(d.dataset.delsub);
-  if(!confirm('حذف "'+s.name+'" ومهامها ووقت مذاكرتها؟'))return;
-  S.subjects=S.subjects.filter(function(x){return x.id!==s.id;});
-  S.tasks=S.tasks.filter(function(t){return t.subjectId!==s.id;});
-  delete S.sessions[s.id];
-  if(filter===s.id)filter='all';
-  save();renderAll();
-});
 
 /* ---------- timer ---------- */
 var T={running:false,total:25*60,left:25*60,last:0,iv:null};
